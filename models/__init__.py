@@ -30,9 +30,11 @@ def find_model_using_name(model_name):
     and it is case-insensitive.
     """
     model_filename = "models." + model_name + "_model"
+    print(model_filename)
     modellib = importlib.import_module(model_filename)
     model = None
     target_model_name = model_name.replace('_', '') + 'model'
+    print(target_model_name)
     for name, cls in modellib.__dict__.items():
         if name.lower() == target_model_name.lower() \
            and issubclass(cls, BaseModel):

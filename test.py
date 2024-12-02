@@ -32,6 +32,7 @@ from data import create_dataset
 from models import create_model
 from util.visualizer import save_images
 from util import html
+from collections import OrderedDict
 
 try:
     import wandb
@@ -72,9 +73,27 @@ if __name__ == '__main__':
             break
         model.set_input(data)  # unpack data from data loader
         model.test()           # run inference
+        # if the inference model gives out 2 channels, save the two channels separately
         visuals = model.get_current_visuals()  # get image results
+
         img_path = model.get_image_paths()     # get image paths
+
+        # Create new OrderedDicts for the separated channels
+        visuals1 = OrderedDict()
+        visuals2 = OrderedDict()
+
+        # Separate the channels and rename the labels
+        for label, tensor in visuals.items():
+            visuals1[f'{label}_mask'] = tensor[:, 0, :, :]
+            visuals2[f'{label}_CT'] = tensor[:, 1, :, :]
+
+
         if i % 5 == 0:  # save images to an HTML file
             print('processing (%04d)-th image... %s' % (i, img_path))
-        save_images(webpage, visuals, img_path, aspect_ratio=opt.aspect_ratio, width=opt.display_winsize, use_wandb=opt.use_wandb)
+        #save_images(webpage, visuals, img_path, aspect_ratio=opt.aspect_ratio, width=opt.display_winsize, use_wandb=opt.use_wandb)
+        save_images(webpage, visuals1, img_path, aspect_ratio=opt.aspect_ratio, width=opt.display_winsize,
+                    use_wandb=opt.use_wandb)
+        save_images(webpage, visuals2, img_path, aspect_ratio=opt.aspect_ratio, width=opt.display_winsize,
+                    use_wandb=opt.use_wandb)
+
     webpage.save()  # save the HTML

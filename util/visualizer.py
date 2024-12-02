@@ -178,7 +178,7 @@ class Visualizer():
             ims_dict = {}
             for label, image in visuals.items():
                 image_numpy = util.tensor2im(image)
-                wandb_image = wandb.Image(image_numpy)
+                wandb_image = wandb.Image(image_numpy[:,:,0])
                 table_row.append(wandb_image)
                 ims_dict[label] = wandb_image
             self.wandb_run.log(ims_dict)
