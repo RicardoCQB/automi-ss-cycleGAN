@@ -117,6 +117,9 @@ class CycleGANModel(BaseModel):
         self.fake_B = fake_B_copy  # Assign the modified copy back to self.fake_B
         self.rec_A = self.netG_B(self.fake_B)   # G_B(G_A(A))
         self.fake_A = self.netG_B(self.real_B)  # G_B(B)
+        fake_A_copy = self.fake_A.clone()  # Create a copy of self.fake_A
+        fake_A_copy[:, 1, :, :] = self.real_B[:, 1, :, :]  # Substitute the second channel
+        self.fake_A = fake_A_copy
         self.rec_B = self.netG_A(self.fake_A)   # G_A(G_B(B))
 
     def backward_D_basic(self, netD, real, fake):
